@@ -2,7 +2,7 @@ FROM python:3.12-alpine
 
 RUN apk add --no-cache tzdata
 
-ENV TZ="Asia/Shanghai"
+ENV TZ="Asia/Jakarta"
 
 WORKDIR /app
 

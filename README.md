@@ -1,63 +1,80 @@
 # genshin-auto-daily-check-in-docker
 
-원신 호요랩 자동 출석체크 도커 이미지. 여러 계정을 한번에 등록할 수 있습니다.
+Genshin Hoyo Lab automatic attendance check Docker image. You can register multiple accounts at once.
 
-[Github](https://github.com/Bing-su/genshin-auto-daily-check-in-docker)
+[Github](https://github.com/rezytijo/genshin-auto-daily-check-in-docker)
 
-## 사용법
+## How to use
 
-### 1. 쿠키 정보 얻기
+### 1. Get cookie information
 
-1. [hoyolab.com](https://www.hoyolab.com/)에 접속합니다.
+1. Access [hoyolab.com](https://www.hoyolab.com/).
 
-2. 로그인 합니다.
+2. Log in.
 
-3. `F12`를 눌러 개발자 도구를 엽니다.
+3. Press `F12` to open developer tools.
 
-4. `애플리케이션(Application)` 탭으로 가서, `쿠키(Cookies)`, `https://www.hoyolab.com`을 순서대로 들어갑니다.
+4. Go to the `Application` tab, enter `Cookies` and then `https://www.hoyolab.com` in that order.
 
-5. 해당 탭에서 `ltuid`와 `ltoken`을 복사합니다. 만약 해당 항목 대신 `ltuid_v2`와 `ltoken_v2`, `ltmid_v2`가 있다면 대신 이 셋을 가져옵니다.
+5. Copy `ltuid` and `ltoken` from the corresponding tab. If `ltuid_v2` and `ltoken_v2` exist instead, these are copied instead.
 
-### 2. 도커 이미지 사용하기
+### 2. Using Docker image
 
-해당 토큰은 예시입니다.
+The token is an example.
 
 ```bash
 docker run -d \
-    --restart always \
-    -e ACCOUNT1=13435465,AbCdEFGhIjKLmnoPQRsTUvWxYZ \
-    -e ACCOUNT2=10203045,v2_I0STD1NliEnsF1lt4rmA9rEs6ltOkForE4chLineiFlinereTurnLetaHasHs3tLinesP1ltWh1t3sPaceF0lt9rmApXxtOlOwerc4secHarsNt=,9bcdef9cpu_py \
-    -e NO_HONKAI=TRUE \
-    ks2515/genshin-auto-daily-check-in
+     --restart always \
+     -e ACCOUNT1=13435465,AbCdEFGhIjKLmnoPQRsTUvWxYZ\
+     -e ACCOUNT2=32132132,PQRsTUvWxYZAbCdEFGhIjKLmno\
+     -e NO_HONKAI=TRUE \
+     ks2515/genshin-auto-daily-check-in
 ```
+### 3. Using Docker Compose File
+```Compose
+version: '3.3'
+services:
+    genshinhelper:
+        container_name: 'genshin-ks2515'
+        environment:
+            - 'TZ=Asia/Jakarta'
+            - 'ACCOUNT1=<ltuid_v2>,<ltoken_v2>'
+            - 'ACCOUNT2=<ltuid_v2>,<ltoken_v2>'
+            - 'NO_START=0'
+            - 'TIME=23:01'
+            - 'SERVER=en-us'
+        #volumes:
+            #- '/etc/genshin:/app/genshincheckinhelper/config'
+        restart: always
+        image: 'ks2515/genshin-auto-daily-check-in'
+```
+All environment variables starting with `ACCOUNT` are recognized.
 
-`ACCOUNT`로 시작하는 모든 환경변수를 인식합니다.
+You must enter ltuid and ltoken separately with `,`.
 
-`,`로 ltuid와 ltoken, ltmid를 구분하여 입력해주어야 합니다.
+![Example image](https://i.imgur.com/s8C8cJy.png)
 
-![예시 이미지](https://i.imgur.com/s8C8cJy.png)
+The result appears as above.
 
-위 처럼 결과가 나옵니다.
+| Available environment variables | Description | Example |
+| ----------- | -------------------------------------------------- | ----------------------------------- |
+| ACCOUNT* | Cookie information. | 13435465,AbCdEFGhIjKLmnoPQRsTUvWxYZ |
+| SERVER | Language information to use. Default "en-us" | en-us,zh-cn,zh-tw,de-de,es-es,fr-fr,id-id,ja-jp,ko-kr,pt-pt,ru-ru,th-th,vi-vn|
+| TIME | It's time to check attendance every day. Based on CST (UTC+8). Default value "00:00"<br/>The standard attendance check time is 1:00 AM Korean time. (00:00 China time) | 00:00 |
+| TZ | The time zone the Docker container will use. <br/>The default value is Asia/Shanghai according to the standard attendance check time. | Asia/Shanghai |
+| NO_GENSHIN | Genshin Impact does not check attendance. | true |
+| NO_STARRAIL | Starrail does not check attendance. | 1 |
+| NO_HONKAI | Collapse 3rd Attendance check is not conducted. | yes |
 
-| 사용가능한 환경 변수 | 설명                                                                                       | 예시                                  |
-| ----------- | ---------------------------------------------------------------------------------------- | ----------------------------------- |
-| ACCOUNT*    | 쿠키 정보입니다.                                                                                | 13435465,AbCdEFGhIjKLmnoPQRsTUvWxYZ |
-| SERVER      | 사용할 언어 정보입니다. 기본값 "ko-kr"                                                                | ko-kr                               |
-| TIME        | 매일 출석체크를 할 시간입니다. CST(UTC+8) 기준입니다. 기본값 "00:00"<br/>출석체크 기준 시각은 한국시간 오전 1시입니다. (중국시간 0시) | 00:00                               |
-| TZ          | 도커 컨테이너가 사용할 시간대입니다. <br/>출석체크 기준 시각에 맞춰 기본값은 Asia/Shanghai입니다.                          | Asia/Shanghai                       |
-| NO_GENSHIN  | 원신 출석체크를 하지 않습니다.                                                                        | true                                |
-| NO_STARRAIL | 스타레일 출석체크를 하지 않습니다.                                                                      | 1                                   |
-| NO_HONKAI   | 붕괴3rd 출석체크를 하지 않습니다.                                                                     | yes                                 |
-
-### 3. 기타
+### 4. Others
 
 ```bash
 python main.py -o
 ```
 
-main.py에 -o를 붙여 실행하면 매일 반복하는 것이 아니라 한 번만 실행합니다.
+If you run main.py with -o, it will run only once instead of repeating every day.
 
-#### 빌드
+#### build
 
 ```bash
 docker buildx create --name genshin-builder --use
@@ -65,7 +82,7 @@ docker buildx create --name genshin-builder --use
 docker buildx build --platform linux/amd64,linux/arm64 --tag ks2515/genshin-auto-daily-check-in --push .
 ```
 
-## 요구사항
+## Requirements
 
 python>=3.11<br>
 [schedule](https://github.com/dbader/schedule)<br>

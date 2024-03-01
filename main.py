@@ -73,11 +73,11 @@ def check_server(server: str) -> str:
     server = server.lower()
     if server not in valid:
         console.log(
-            f"'{server}': 유효한 서버가 아닙니다. "
+            f"'{server}': Not a valid server. "
             "'zh-cn', 'zh-tw', 'de-de', 'en-us', 'es-es', "
             "'fr-fr', 'id-id', 'ja-jp', 'ko-kr', 'pt-pt', "
-            "'ru-ru', 'th-th', 'vi-vn' 중의 하나여야 합니다. "
-            "'ko-kr'을 사용합니다."
+            "'ru-ru', 'th-th', 'vi-vn' Must be one of. "
+            "'ko-kr'Use."
         )
         server = "ko-kr"
     return server
@@ -120,7 +120,7 @@ class GetDailyReward:
             await client.claim_daily_reward(reward=False)
         except genshin.InvalidCookies:
             console.log(
-                f"{cookie.env_name}: 쿠키 정보가 잘못되었습니다. ltuid와 ltoken을 확인해주세요."
+                f"{cookie.env_name}: Cookie information is incorrect. Please check ltuid and ltoken."
             )
             return info
         except genshin.AlreadyClaimed:
@@ -290,12 +290,12 @@ if __name__ == "__main__":
     try:
         schedule.every().day.at(TIME).do(main)
     except schedule.ScheduleValueError:
-        m = f"'{TIME}'은 잘못된 시간 형식입니다. TIME을 HH:MM(:SS)형태로 입력해주십시오."
+        m = f"'{TIME}'is an invalid time format. Please enter TIME in HH:MM(:SS) format."
         console.log(m)
-        console.log("앱이 종료되었습니다.")
+        console.log("The app has closed.")
         sys.exit(1)
 
-    console.log("앱이 실행되었습니다.")
+    console.log("The app has launched.")
 
     while True:
         schedule.run_pending()
